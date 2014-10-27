@@ -1,0 +1,21 @@
+{
+  "name": "NodeMigrationTool",
+  "version": "0.0.1",
+  "description": "A quick tool to migrate raw SQL files in a transactional manner",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "migration",
+    "db",
+    "database"
+  ],
+  "author": "Nick Joannidi",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^3.6.2",
+    "prompt": "^0.2.14",
+    "simple-spinner": "0.0.2"
+  }
+}
