@@ -38,4 +38,6 @@ We can expand upon this by adding a db-type to the settings file, abstracting th
 * Different import actions (up/down -- this will require directory structure, additional files)
 * Multiple servers
 
+Pull requests welcome.
+
 version 0.0.1a
