@@ -1,8 +1,26 @@
 #!/usr/bin/env node
 if(process.argv.length < 3)
 {
-	console.log('No File selected. Aborting...');
+	console.log('No File selected, Aborting. \nFor help please use -h');
 	return 1;
+}
+
+if(process.argv[2] === '-h')
+{
+	console.log('\nQuick and Not-So-Dirty DB Migration');
+
+	console.log('Reads SQL files and imports into specified DB within a transaction');
+	console.log('\nUsage:');
+	console.log('./index.js [sqlFile1] [sqlFile2]');
+	console.log('\n\nImports [sqlFile1] and [sqlFile2] sequentially within a transaction.');
+	console.log('There is no limit to the amount of files you can include here.');
+	console.log('If any errors are encountered, the changes will automatically be rolled back.\n');
+	console.log('Db settings file: config/dbInfo.json');
+	console.log('Login credentials will be asked upon migration.');
+	console.log('More info in README.md\n');
+	console.log('version 0.0.1a');
+
+	process.exit(0);
 }
 
 var files = process.argv.slice(2);
