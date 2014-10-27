@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 if(process.argv.length < 3)
 {
 	console.log('No File selected. Aborting...');
@@ -11,6 +12,12 @@ var fs = require('fs');
 var pg = require('pg');
 var prompt = require('prompt');
 var errorHandler = require('./errorHandler.js');
+
+if(!fs.existsSync('config/dbInfo.json'))
+{
+	console.log('\nconfig/dbInfo.json'.yellow + ' does not exist. Please create one. (template: config/dbInfo.json.tmp)\n'.magenta);
+	process.exit(1);
+}
 
 var settings = JSON.parse(fs.readFileSync('config/dbInfo.json').toString());
 
