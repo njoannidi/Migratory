@@ -16,7 +16,7 @@ exports.handleDbError = function(err, result, client, file)
 			else 
 			{
 				console.log('Rollback Successful.'.yellow);
-				console.log('Error occured in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta);
+				console.log('Error occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta);
 				process.exit(1);				
 			}
 		});
