@@ -1,0 +1,5 @@
+node_modules
+sqlFiles
+config/*
+!config/dbInfo.json.tmp
+
