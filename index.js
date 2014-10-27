@@ -13,7 +13,6 @@ var prompt = require('prompt');
 var errorHandler = require('./errorHandler.js');
 
 var settings = JSON.parse(fs.readFileSync('config/dbInfo.json').toString());
-//var promptSchema = JSON.parse(fs.readFileSync('config/prompt.json').toString());
 
 for (var i in files)
 {
