@@ -25,4 +25,10 @@ These will be asked upon migration for security purposes
 Currently PostgreSql is the only database supported.
 We can expand upon this by adding a db-type to the settings file, abstracting the connection and querying.
 
+###Foreseeable updates:
+* Addition of additional updates
+* Importing of migrations directory
+* Different import actions (up/down -- this will require directory structure, additional files)
+* Multiple servers
+
 version 0.0.1a
