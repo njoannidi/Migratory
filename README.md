@@ -1,6 +1,13 @@
 ##Quick DB Migration
 Imports SQL files into specified DB within a transaction.
 
+For those of you that prefer to use SQL rather than ORMs,
+or you just have some DB dumps kicking around that you'd 
+rather safely import via a transaction.
+
+Can be used to populate structure, data or both.
+
+Compatible with database dumps.
 
 ###Usage:
 ./index.js sqlFile1 sqlFile2
