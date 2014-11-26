@@ -26,125 +26,96 @@ if(process.argv[2] === '-h')
 var files = process.argv.slice(2);
 var currentFile = 0;
 
+var configDirectory = 'config/';
+
 var fs = require('fs');
-var pg = require('pg');
+var path = require('path');
+
 var prompt = require('prompt');
 var errorHandler = require('./errorHandler.js');
+var dbHandler = require('./dbHandler.js');
+var inquirer = require('inquirer');
 
-if(!fs.existsSync('config/dbInfo.json'))
+
+/*
+	Grab potential config files and start builing prompt
+ */
+configFiles = fs.readdirSync(configDirectory);
+settingsPrompt = [];
+
+for(i in configFiles)
 {
-	console.log('\nconfig/dbInfo.json'.yellow + ' does not exist. Please create one. (template: config/dbInfo.json.tmp)\n'.magenta);
-	process.exit(1);
-}
-
-var settings = JSON.parse(fs.readFileSync('config/dbInfo.json').toString());
-
-for (var i in files)
-{
-	if(!fs.existsSync(files[i]))
+	if(path.extname(configDirectory+configFiles[i]) == '.json')
 	{
-		console.log('\nFile: '.magenta + files[i].yellow + ' does not exist. Please check path.'.magenta + '\n');
-		process.exit(1);
+		currentConfig = JSON.parse(fs.readFileSync(configDirectory+configFiles[i]).toString());
+		settingsPrompt.push({name: currentConfig.name + ' ('+currentConfig.host+':'+currentConfig.database+')', value: configFiles[i]});
 	}
 }
 
-promptSchema = {
-	properties: {
-		username: 
+/*
+	Ask user what config file they wish to use
+ */
+inquirer.prompt({type: 'list', 
+				message: 'Choose Database to Migrate to',
+				choices: settingsPrompt,
+				name: 'configFile'
+				}, function(answers)
+	{
+
+		// Ensure config file still exists
+		if(!fs.existsSync(configDirectory+answers.configFile))
 		{
-			description: 'Database Username: '.cyan,
-			required: true
-		},
-		password: 
-		{
-			description: 'Database Password: '.cyan,
-			hidden:true,
-			required: true
+			console.log('\n'+configDirectory+answers.configFile.yellow + ' does not exist. Please create one. (template: config/dbInfo.json.tmp)\n'.magenta);
+			process.exit(1);
 		}
-	}
-}
 
-console.log('\nHost:\t'.green + settings.host, '\nDb:\t'.green+ settings.database + '\nSchema:\t'.green + settings.database + '\n');
-
-prompt.start();
-
-prompt.message = "";
-prompt.delimiter = "";
-
-prompt.get(promptSchema, function(err, result)
-	{
-		if(err) {return errorHandler.onErr(err);}
-		process.stdout.write('\nConnecting as '.green + result.username + ' ... ');
-
-		pg.connect('postgres://'+result.username+':'+result.password+'@'+settings.host+'/'+settings.database, 
-			function(err, client, done)
+		// Before we start, make sure each of the files exist.
+		for (var i in files)
+		{
+			if(!fs.existsSync(files[i]))
 			{
-				if(err){return errorHandler.onErr(err);}
+				console.log('\nFile: '.magenta + files[i].yellow + ' does not exist. Please check path.'.magenta + '\n');
+				process.exit(1);
+			}
+		}
 
-				process.stdout.write('Successful'.green+'\n');
+		var settings = JSON.parse(fs.readFileSync(configDirectory+answers.configFile).toString());
 
-				if(settings.schema)
+		promptSchema = {
+			properties: {
+				username: 
 				{
-					console.log('\nSetting Schema to: '.green + settings.schema);
-					client.query('SET search_path TO "'+settings.schema+'"', 
-						function(err, result)
-						{
-							if(err){errorHandler.onErr(err);}
-							client.query('BEGIN;', function(err,result)
-								{
-									if(err) {return errorHandler.onErr(err);}
-									processFiles(client);		
-								});
-							
-						});
-				} 
-				else 
+					description: 'Database Username: '.cyan,
+					required: true
+				},
+				password: 
 				{
-					client.query('BEGIN;', function(err,result)
-					{
-						if(err) {return errorHandler.onErr(err);}
-						processFiles(client);
-					});
-
-					
+					description: 'Database Password: '.cyan,
+					hidden:true,
+					required: true
 				}
+			}
+		}
+
+		console.log('\nHost:\t'.green + settings.host, '\nDb:\t'.green+ settings.database + '\nSchema:\t'.green + settings.database + '\n');
+
+		prompt.start();
+
+		prompt.message = "";
+		prompt.delimiter = "";
+
+		prompt.get(promptSchema, function(err, result)
+			{
+				if(err) {return errorHandler.onErr(err);}
+				credentials = {username: result.username,
+								password: result.password,
+								host: settings.host,
+								database: settings.database,
+								schema: settings.schema}
+
+				dbHandler.beginMigration(credentials, files);
 			});
+		//process.exit(0);
 	});
 
-
-function processFiles(client)
-{
-	var currFile = files[currentFile];
-	
-	process.stdout.write('\nProcessing file: '.green + currFile.yellow+' ...'.green);
-	var sqlFile = fs.readFileSync(currFile).toString();
-
-	client.query(sqlFile, function(err, result)
-	{
-		if(err) {return errorHandler.handleDbError(err, result, client, currFile);}
-
-		process.stdout.write(' Successful'.green);
-		handleCompletedMigration(client);
-	});	
-			
-}
-
-function handleCompletedMigration(client)
-{
-	++currentFile;
-
-	if(files.length > currentFile)
-	{
-		processFiles(client);
-	}
-	else
-	{
-		client.query('COMMIT;', function(err,result)
-		{
-			if(err) {return errorHandler.handleDbError(err);}
-				console.log('\nMigration Complete'.green);		
-				process.exit(0);
-		});
-	}
-}
 
