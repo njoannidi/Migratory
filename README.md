@@ -37,9 +37,13 @@ This will create a base settings file (migratory.json) that looks something like
 }
 ```
 **Destination Label:** A User-Friendly label that you'll recognize as a server. Maybe "Dev", "QA", or "Production"
+
 **host:** Server on which to deploy
+
 **database:** Database on which your SQL commands will be executed
+
 **schema:** Optional. Search path to be set.
+
 
 Credentials will be input at the time of migrations for security reasons.
 
