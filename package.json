@@ -1,6 +1,7 @@
 {
   "name": "migratory",
-  "version": "0.0.22a",
+  "version": "0.0.2a",
+  "version": "0.0.1a",
   "description": "A tool to migrate raw SQL files in a transactional manner",
   "main": "migratory.js",
   "scripts": {
