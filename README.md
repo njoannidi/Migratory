@@ -10,19 +10,56 @@ Can be used to populate structure, data or both.
 Compatible with database dumps.
 
 ###Usage:
-./migratory.js sqlFile1 sqlFile2
+####Installation:
 
-Imports sqlFile1 and sqlFile2 into specified DB sequentially within a transaction.
+Preferred method of installation is globally via npm:
+
+```
+npm install -g migratory
+```
+
+Any projects in which you'd like to use Migratory, first run:
+
+```
+migratory init
+```
+
+This will create a base settings file (migratory.json) that looks something like this:
+
+```
+
+{
+    "Destination Label": {
+        "host": "",
+        "database": "",
+        "schema": ""
+     }
+}
+```
+**Destination Label:** A User-Friendly label that you'll recognize as a server. Maybe "Dev", "QA", or "Production"
+**host:** Server on which to deploy
+**database:** Database on which your SQL commands will be executed
+**schema:** Optional. Search path to be set.
+
+Credentials will be input at the time of migrations for security reasons.
+
+You can add as many servers as you like into this json object; local or remote.
+
+Once you're done, you're ready to use Migratory!
+
+#### Running Migrations
+Once you're all set up with your migratory.json file, you can run your deployments. You'll need to run these deployments from the directory that contains your migratory.js file.
+
+```
+migratory sqlFile1 sqlFile2
+```
+
+You will then be prompted to choose the database you wish to import the specified files into.
+
+Once chosen, Migratory will import sqlFile1 and sqlFile2 into specified DB sequentially within a transaction.
+
 There's no limit to the amount of files you can import in one command.
 If any errors are encountered, all changes will be rolled back.
-
-###Settings Files:
-
-####config/*.json
-
-These files should contain settings for any DB you'd want to connect to.
-
-A template of this file is stored in config/dbInfo.json.tmp
 
 ####Login Credentials
 These will be asked upon migration for security purposes
@@ -40,4 +77,4 @@ We can expand upon this by adding a db-type to the settings file, abstracting th
 
 Pull requests welcome.
 
-version 0.0.1a
+version 0.0.1b
