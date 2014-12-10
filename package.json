@@ -22,8 +22,7 @@
   "dependencies": {
     "inquirer": "^0.8.0",
     "pg": "^3.6.2",
-    "prompt": "^0.2.14",
-    "simple-spinner": "0.0.2"
+    "prompt": "^0.2.14"
   },
   "bin" : { "migrate" : "migratory.js" }
 }
