@@ -82,7 +82,7 @@ var args = {
  			catch(e)
  			{
  				console.log(e);
- 				process.exit(1)
+ 				process.exit(1);
  			}
  			console.log('Success!');
  			process.exit(0);
@@ -94,7 +94,7 @@ var args = {
 
 exports.handle = function(cb)
 {
-	for(i in args)
+	for(var i in args)
 	{
 		if(args[i].check())
 		{
@@ -103,5 +103,5 @@ exports.handle = function(cb)
 	}	
 
 	cb();
-}
+};
 

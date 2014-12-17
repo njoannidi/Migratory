@@ -78,6 +78,7 @@ We can expand upon this by adding a db-type to the settings file, abstracting th
 * Importing of all migrations in directory
 * Different import actions (up/down -- this will require directory structure, additional files)
 * Grunt / Gulp integration
+* SSL
 
 Pull requests welcome.
 
