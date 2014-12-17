@@ -20,7 +20,7 @@ exports.handleDbError = function(err, result, client, file)
 				process.exit(1);				
 			}
 		});
-}
+};
 
 exports.onErr = function(err, result)
 {
@@ -28,4 +28,4 @@ exports.onErr = function(err, result)
 	console.log('An Error as occurred:\n '.red);
 	console.log(err);
 	process.exit(1);
-}
+};
