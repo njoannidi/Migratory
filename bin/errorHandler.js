@@ -1,4 +1,4 @@
-exports.handleDbError = function(err, result, client, file)
+exports.handleDbError = function(err, client, database, file)
 {
 
 	console.log('\n\nError Encountered:\n'.red);
@@ -6,19 +6,19 @@ exports.handleDbError = function(err, result, client, file)
 	console.log('Error Code: '.red +err.code.red);
 	console.log('\nAttempting to Roll Back.'.magenta);
 
-	client.query('ROLLBACK;', function(err, result)
+	database.rollback(client, 
+		// Success
+		function()
 		{
-			if(err)
-			{
-				console.log('Rollback Unsuccessful. You may have to restore the database.\n'.red);
-				process.exit(2);
-			} 
-			else 
-			{
-				console.log('Rollback Successful.'.yellow);
-				console.log('Error occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta);
-				process.exit(1);				
-			}
+			console.log('Rollback Successful.'.yellow);
+			console.log('Error occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta);
+			process.exit(1);
+		},
+		// Failure
+		function()
+		{
+			console.log('Rollback Unsuccessful. You may have to restore the database.\n'.red);
+			process.exit(2);
 		});
 };
 

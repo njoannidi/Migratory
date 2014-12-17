@@ -1,5 +1,5 @@
 var fs = require('fs');
-
+var errorHandler = require('./errorHandler.js');
 var client, files, currentFile, database;
 
 module.exports.beginMigration = function (credentials, filesToProcess)
@@ -18,18 +18,27 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 	currentFile = 0;
 	files = filesToProcess;
 
-	database.connect(credentials, function(dbClient)
-		{
-			client = dbClient;
-			if(credentials.schema)
+	try
+	{
+
+		database.connect(credentials, function(dbClient)
 			{
-				database.setSchema(client, credentials.schema, processFiles());
-			}
-			else
-			{
-				processFiles();
-			}
-		});
+				client = dbClient;
+				if(credentials.schema)
+				{
+					database.setSchema(client, credentials.schema, processFiles());
+				}
+				else
+				{
+					processFiles();
+				}
+			});
+	}
+	catch(err)
+	{
+		errorHandler.handleDbError(err);
+	}
+
 };
 
 var processFiles = function()
@@ -39,7 +48,9 @@ var processFiles = function()
 	process.stdout.write('\nProcessing file: '.green + currFile.yellow+' ...'.green);
 	var sqlFile = fs.readFileSync(currFile).toString();
 
-	database.processFile(client, sqlFile, function()
+	try
+	{
+		database.processFile(client, sqlFile, function()
 		{
 			++currentFile;
 			if(files.length > currentFile)
@@ -51,14 +62,26 @@ var processFiles = function()
 				migrationComplete();
 			}
 		});
+	}
+	catch (err)
+	{
+		errorHandler.handleDbError(err, client, database, currFile);
+	}
 
 };
 
 var migrationComplete = function()
 {
-	database.commit(client, function()
-		{
-			console.log('\nMigration Complete'.green);		
-			process.exit(0);
-		});
+	try
+	{
+		database.commit(client, function()
+			{
+				console.log('\nMigration Complete'.green);		
+				process.exit(0);
+			});
+	}
+	catch(err)
+	{
+		errorHandler.handleDbError(err);
+	}
 };
