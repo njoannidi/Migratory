@@ -66,8 +66,8 @@ var args = {
 								{
 									"host" : "",
 									"database" : "",
-									"schema": "",
-									"type" : ""
+									"type" : "",
+									"schema": ""
 								}
 							};
 

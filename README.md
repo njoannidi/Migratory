@@ -32,7 +32,8 @@ This will create a base settings file (migratory.json) that looks something like
     "Destination Label": {
         "host": "",
         "database": "",
-        "schema": ""
+        "type": "",
+        "schema": "",
      }
 }
 ```
@@ -41,6 +42,8 @@ This will create a base settings file (migratory.json) that looks something like
 **host:** Server on which to deploy
 
 **database:** Database on which your SQL commands will be executed
+
+**type:** The Type of DB to connect to. Currently only supporting pgsql
 
 **schema:** Optional. Search path to be set.
 
