@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "inquirer": "^0.8.0",
+    "mysql": "^2.5.4",
     "pg": "^3.6.2",
     "prompt": "^0.2.14"
   },

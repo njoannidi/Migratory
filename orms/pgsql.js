@@ -1,6 +1,5 @@
 var pg = require('pg');
 var fs = require('fs');
-var errorHandler = require('../bin/errorHandler.js');
 
 module.exports.connect = function(credentials, cb)
 {
