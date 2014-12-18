@@ -9,6 +9,12 @@ Can be used to populate structure, data or both.
 
 Compatible with database dumps.
 
+###Supported RDBMS
+* Postgresql
+* MySQL
+
+SQLite coming soon...
+
 ###Usage:
 ####Installation:
 
@@ -71,12 +77,6 @@ If any errors are encountered, all changes will be rolled back.
 ####Login Credentials
 These will be asked upon migration for security purposes
 
-###RDBMS
-* Postgresql
-
-Currently PostgreSql is the only database supported.
-We can expand upon this by adding a db-type to the settings file, abstracting the connection and querying.
-
 ###Foreseeable updates:
 * Importing of all migrations in directory
 * Different import actions (up/down -- this will require directory structure, additional files)
@@ -85,4 +85,4 @@ We can expand upon this by adding a db-type to the settings file, abstracting th
 
 Pull requests welcome.
 
-version 0.0.1b
+version 0.0.6a
