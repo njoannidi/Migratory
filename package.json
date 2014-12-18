@@ -2,7 +2,7 @@
   "name": "migratory",
   "version": "0.0.6a",
   "description": "A tool to migrate raw SQL files in a transactional manner",
-  "main": "migratory.js",
+  "main": "bin/migratory.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
