@@ -10,7 +10,7 @@ module.exports.connect = function(credentials, cb)
 		if(err){ throw err; }
 
 		process.stdout.write('Successful'.green+'\n');
-		if(cb){ cb(connection) };
+		if(cb){ cb(connection); }
 	});
 };
 

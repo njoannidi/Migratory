@@ -1,6 +1,6 @@
 {
   "name": "migratory",
-  "version": "0.0.5a",
+  "version": "0.0.6a",
   "description": "A tool to migrate raw SQL files in a transactional manner",
   "main": "migratory.js",
   "scripts": {
@@ -15,7 +15,8 @@
     "postgres",
     "postgresql",
     "transaction",
-    "sql"
+    "sql",
+    "mysql"
   ],
   "author": "Nick Joannidi",
   "license": "ISC",
