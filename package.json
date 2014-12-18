@@ -8,6 +8,7 @@
   },
   "keywords": [
     "migration",
+    "migrate",
     "db",
     "database",
     "pg",
@@ -16,6 +17,7 @@
     "postgres",
     "postgresql",
     "transaction",
+    "transactional",
     "sql",
     "mysql"
   ],
