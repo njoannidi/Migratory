@@ -1,9 +1,9 @@
-var pg = require('mysql');
+var mysql = require('mysql');
 var fs = require('fs');
 
 module.exports.connect = function(credentials, cb)
 {
-	var connection = mysql.createConnection(host: credentials.host, user: credentials.username, password: credentials.password, database: credentials.database);
+	var connection = mysql.createConnection({host: credentials.host, user: credentials.username, password: credentials.password, database: credentials.database, multipleStatements:true});
 
 	connection.connect(function(err)
 	{
@@ -17,8 +17,8 @@ module.exports.connect = function(credentials, cb)
 module.exports.setSchema = function(client, schema, cb)
 {
 	// No schemas in MySQL.
-	console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')');
-	cb();
+	console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green);
+	if(cb) { cb();}
 };
 
 module.exports.beginTransaction = function(client, cb)
