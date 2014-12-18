@@ -6,7 +6,7 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 {
 	if(!fs.existsSync(__dirname+'/../orms/'+credentials.type+'.js'))
 	{	
-		process.stdout.write('\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql');
+		process.stdout.write('\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql\n');
 		process.exit(1);
 	}
 
