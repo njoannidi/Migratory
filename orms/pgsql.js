@@ -17,7 +17,7 @@ module.exports.connect = function(credentials, cb)
 module.exports.setSchema = function(client, schema, cb)
 {
 	console.log('\nSetting Schema to: '.green + credentials.schema);
-	client.query('SET search_path TO "'+credentials.schema+';"', 
+	client.query('SET search_path TO '+credentials.schema+';', 
 		function(err, result)
 		{
 			if(err){throw err;}
