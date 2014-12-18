@@ -18,7 +18,7 @@ module.exports.setSchema = function(client, schema, cb)
 {
 	// No schemas in MySQL.
 	console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green);
-	if(cb) { cb();}
+	if(cb) { cb(client);}
 };
 
 module.exports.beginTransaction = function(client, cb)
@@ -26,7 +26,7 @@ module.exports.beginTransaction = function(client, cb)
 	client.query('START TRANSACTION', function(err, results)
 	{
 		if(err) {throw err;}
-		if(cb) {return cb();}
+		if(cb) {return cb(client);}
 	});
 };
 
@@ -34,8 +34,8 @@ module.exports.rollback = function(client, success, failure)
 {
 	client.query('ROLLBACK', function(err, results)
 	{
-		if(err && failure) { failure(); }
-		else if(success) { success(); }
+		if(err && failure) { failure(client); }
+		else if(success) { success(client); }
 	});
 };
 
@@ -44,7 +44,7 @@ module.exports.commit = function(client, cb)
 	client.query('COMMIT', function(err,result)
 	{
 		if(err) {throw err;}
-		if(cb) { cb(); }
+		if(cb) { cb(client); }
 	});
 };
 
@@ -54,6 +54,6 @@ module.exports.processFile = function(client, sqlFile, cb)
 	{
 		if(err) { throw err; }
 		process.stdout.write(' Successful'.green);
-		if(cb) { cb(); }
+		if(cb) { cb(client); }
 	});	
 };

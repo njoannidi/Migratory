@@ -1,10 +1,9 @@
 var fs = require('fs');
 var errorHandler = require('./errorHandler.js');
-var client, files, currentFile, database;
+var files, currentFile, database;
 
 module.exports.beginMigration = function (credentials, filesToProcess)
 {
-
 	if(!fs.existsSync(__dirname+'/../orms/'+credentials.type+'.js'))
 	{	
 		process.stdout.write('\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql');
@@ -23,14 +22,13 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 
 		database.connect(credentials, function(dbClient)
 			{
-				client = dbClient;
 				if(credentials.schema)
 				{
-					database.setSchema(client, credentials.schema, processFiles());
+					database.setSchema(dbClient, credentials.schema, processFiles(dbClient));
 				}
 				else
 				{
-					processFiles();
+					processFiles(dbClient);
 				}
 			});
 	}
@@ -41,7 +39,7 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 
 };
 
-var processFiles = function()
+var processFiles = function(dbClient)
 {
 	var currFile = files[currentFile];
 
@@ -50,31 +48,31 @@ var processFiles = function()
 
 	try
 	{
-		database.processFile(client, sqlFile, function()
+		database.processFile(dbClient, sqlFile, function(dbClient)
 		{
 			++currentFile;
 			if(files.length > currentFile)
 			{
-				processFiles();
+				processFiles(dbClient);
 			}
 			else
 			{
-				migrationComplete();
+				migrationComplete(dbClient);
 			}
 		});
 	}
 	catch (err)
 	{
-		errorHandler.handleDbError(err, client, database, currFile);
+		errorHandler.handleDbError(err, dbClient, database, currFile);
 	}
 
 };
 
-var migrationComplete = function()
+var migrationComplete = function(dbClient)
 {
 	try
 	{
-		database.commit(client, function()
+		database.commit(dbClient, function()
 			{
 				console.log('\nMigration Complete'.green);		
 				process.exit(0);

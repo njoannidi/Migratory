@@ -17,11 +17,11 @@ module.exports.connect = function(credentials, cb)
 module.exports.setSchema = function(client, schema, cb)
 {
 	console.log('\nSetting Schema to: '.green + credentials.schema);
-	client.query('SET search_path TO "'+credentials.schema+'"', 
+	client.query('SET search_path TO "'+credentials.schema+';"', 
 		function(err, result)
 		{
 			if(err){throw err;}
-			if(cb) { cb(); }
+			if(cb) { cb(client); }
 		});
 };
 
@@ -30,7 +30,7 @@ module.exports.beginTransaction = function(client, cb)
 	client.query('BEGIN;', function(err,result)
 		{
 			if(err) {throw err;}
-			if(cb) { cb(); }
+			if(cb) { cb(client); }
 			
 		});
 };
@@ -41,11 +41,11 @@ module.exports.rollback = function(client, success, failure)
 		{
 			if(err && failure)
 			{
-				failure();
+				failure(client);
 			} 
 			else if(success)
 			{
-				success();
+				success(client);
 			}
 		});
 };
@@ -55,7 +55,7 @@ module.exports.commit = function(client, cb)
 	client.query('COMMIT;', function(err,result)
 	{
 		if(err) {throw err;}
-			if(cb) { cb(); }
+			if(cb) { cb(client); }
 	});
 };
 
@@ -65,6 +65,6 @@ module.exports.processFile = function(client, sqlFile, cb)
 	{
 		if(err) { throw err; }
 		process.stdout.write(' Successful'.green);
-		if(cb) { cb(); }
+		if(cb) { cb(client); }
 	});	
 };
