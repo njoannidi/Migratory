@@ -12,6 +12,7 @@
     "database",
     "pg",
     "postge",
+    "postgre"
     "postgres",
     "postgresql",
     "transaction",
