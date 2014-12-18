@@ -24,10 +24,15 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 			{
 				if(credentials.schema)
 				{
-					database.setSchema(dbClient, credentials.schema, processFiles(dbClient));
+					database.setSchema(dbClient, credentials.schema, function(client)
+						{
+							database.beginTransaction(client);
+							processFiles(client);
+						});
 				}
 				else
 				{
+					database.beginTransaction(client);
 					processFiles(dbClient);
 				}
 			});
