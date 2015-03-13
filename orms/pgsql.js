@@ -1,70 +1,81 @@
 var pg = require('pg');
 var fs = require('fs');
+var errorHandler = require('../bin/errorHandler.js');
 
-module.exports.connect = function(credentials, cb)
-{
-	pg.connect('postgres://'+credentials.username+':'+credentials.password+'@'+credentials.host+'/'+credentials.database, 
-		function(err, newClient, done)
+pgDatabaseHandler = 	{
+		connect: function(credentials, cb)
 		{
-			if(err){throw err;}
-			
-			process.stdout.write('Successful'.green+'\n');
-			if(cb) { cb(newClient); }
-			
-		});
-};
+			pg.connect('postgres://'+credentials.username+':'+credentials.password+'@'+credentials.host+'/'+credentials.database, 
+				function(err, newClient, done)
+				{
+		         if(err) {pgDatabaseHandler.handleError(err); return false;}
+					//if(err){throw err;}
+					
+					process.stdout.write('Successful'.green+'\n');
+					if(cb) { cb(newClient); }
+					
+				});
+		},
 
-module.exports.setSchema = function(client, schema, cb)
-{
-	console.log('\nSetting Schema to: '.green + credentials.schema);
-	client.query('SET search_path TO '+credentials.schema+';', 
-		function(err, result)
+		setSchema: function(client, schema, cb)
 		{
-			if(err){throw err;}
-			if(cb) { cb(client); }
-		});
-};
+			console.log('\nSetting Schema to: '.green + credentials.schema);
+			client.query('SET search_path TO '+credentials.schema+';', 
+				function(err, result)
+				{
+					if(err){pgDatabaseHandler.handleError(err, client); return false;}
+					if(cb) { cb(client); }
+				});
+		},
 
-module.exports.beginTransaction = function(client, cb)
-{
-	client.query('BEGIN;', function(err,result)
+		beginTransaction: function(client, cb)
 		{
-			if(err) {throw err;}
-			if(cb) { cb(client); }
-			
-		});
-};
+			client.query('BEGIN;', function(err,result)
+				{
+					if(err) {pgDatabaseHandler.handleError(err, client);return false;}
+					if(cb) { cb(client); }
+					
+				});
+		},
 
-module.exports.rollback = function(client, success, failure)
-{
-	client.query('ROLLBACK;', function(err, result)
+		rollback: function(client, success, failure)
 		{
-			if(err && failure)
+			client.query('ROLLBACK;', function(err, result)
+				{
+					if(err && failure)
+					{
+						failure(client);
+					} 
+				else if(success)
+				{
+						success(client);
+				}
+				});
+		},
+
+		commit: function(client, cb)
+		{
+			client.query('COMMIT;', function(err,result)
 			{
-				failure(client);
-			} 
-			else if(success)
+				if(err) {pgDatabaseHandler.handleError(err, client)}
+					if(cb) { cb(client); }
+			});
+		},
+
+		processFile: function(client, sqlFile, cb)
+		{
+			client.query(sqlFile, function(err, result)
 			{
-				success(client);
-			}
-		});
-};
+				if(err) {pgDatabaseHandler.handleError(err, client); return false;}
+				process.stdout.write(' Successful'.green);
+				if(cb) { cb(client); }
+			});	
+		},
 
-module.exports.commit = function(client, cb)
-{
-	client.query('COMMIT;', function(err,result)
-	{
-		if(err) {throw err;}
-			if(cb) { cb(client); }
-	});
-};
+		handleError: function(err, client)
+		{
+			errorHandler.handleDbError(err, client, this);
+		}
+	};
 
-module.exports.processFile = function(client, sqlFile, cb)
-{
-	client.query(sqlFile, function(err, result)
-	{
-		if(err) { throw err; }
-		process.stdout.write(' Successful'.green);
-		if(cb) { cb(client); }
-	});	
-};
+module.exports = pgDatabaseHandler;
