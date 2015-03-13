@@ -57,7 +57,7 @@ pgDatabaseHandler = 	{
 		{
 			client.query('COMMIT;', function(err,result)
 			{
-				if(err) {pgDatabaseHandler.handleError(err, client)}
+				if(err) {pgDatabaseHandler.handleError(err, client);}
 					if(cb) { cb(client); }
 			});
 		},
