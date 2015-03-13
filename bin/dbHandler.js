@@ -38,7 +38,7 @@ module.exports.beginMigration = function (credentials, filesToProcess)
 			});
 	}
 	catch(err)
-	{
+    { 
 		errorHandler.handleDbError(err);
 	}
 

@@ -1,59 +1,69 @@
 var mysql = require('mysql');
 var fs = require('fs');
+var errorHandler = require('../bin/errorHandler.js');
 
-module.exports.connect = function(credentials, cb)
-{
-	var connection = mysql.createConnection({host: credentials.host, user: credentials.username, password: credentials.password, database: credentials.database, multipleStatements:true});
-
-	connection.connect(function(err)
+var mysqlDatabaseHandler = 
 	{
-		if(err){ throw err; }
+		connect: function(credentials, cb)
+		{
+			var connection = mysql.createConnection({host: credentials.host, user: credentials.username, password: credentials.password, database: credentials.database, multipleStatements:true});
 
-		process.stdout.write('Successful'.green+'\n');
-		if(cb){ cb(connection); }
-	});
-};
+			connection.connect(function(err)
+			{
+				if(err){ throw err; }
 
-module.exports.setSchema = function(client, schema, cb)
-{
-	// No schemas in MySQL.
-	console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green);
-	if(cb) { cb(client);}
-};
+				process.stdout.write('Successful'.green+'\n');
+				if(cb){ cb(connection); }
+			});
+		},
 
-module.exports.beginTransaction = function(client, cb)
-{
-	client.query('START TRANSACTION', function(err, results)
-	{
-		if(err) {throw err;}
-		if(cb) {return cb(client);}
-	});
-};
+		setSchema: function(client, schema, cb)
+		{
+			// No schemas in MySQL.
+			console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green);
+			if(cb) { cb(client);}
+		},
 
-module.exports.rollback = function(client, success, failure)
-{
-	client.query('ROLLBACK', function(err, results)
-	{
-		if(err && failure) { failure(client); }
-		else if(success) { success(client); }
-	});
-};
+		beginTransaction: function(client, cb)
+		{
+			client.query('START TRANSACTION', function(err, results)
+			{
+				if(err) {throw err;}
+				if(cb) {return cb(client);}
+			});
+		},
 
-module.exports.commit = function(client, cb)
-{
-	client.query('COMMIT', function(err,result)
-	{
-		if(err) {throw err;}
-		if(cb) { cb(client); }
-	});
-};
+		rollback: function(client, success, failure)
+		{
+			client.query('ROLLBACK', function(err, results)
+			{
+				if(err && failure) { failure(client); }
+				else if(success) { success(client); }
+			});
+		},
 
-module.exports.processFile = function(client, sqlFile, cb)
-{
-	client.query(sqlFile, function(err, result)
-	{
-		if(err) { throw err; }
-		process.stdout.write(' Successful'.green);
-		if(cb) { cb(client); }
-	});	
-};
+		commit: function(client, cb)
+		{
+			client.query('COMMIT', function(err,result)
+			{
+				if(err) {throw err;}
+				if(cb) { cb(client); }
+			});
+		},
+
+		processFile: function(client, sqlFile, cb)
+		{
+			client.query(sqlFile, function(err, result)
+			{
+				if(err) { throw err; }
+				process.stdout.write(' Successful'.green);
+				if(cb) { cb(client); }
+			});	
+		},
+		handleError: function(err, client)
+		{
+			errorHandler.handleDbError(err, client, this);
+		}
+	};
+
+module.exports = mysqlDatabaseHandler;
