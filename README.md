@@ -85,4 +85,4 @@ These will be asked upon migration for security purposes
 
 Pull requests welcome.
 
-version 0.0.10a
+version 0.0.11a
