@@ -1,4 +1,4 @@
-##Migratory
+## Migratory
 Imports SQL files into specified DB within a transaction.
 
 For those of you that prefer to use SQL rather than ORMs,
@@ -9,14 +9,14 @@ Can be used to populate structure, data or both.
 
 Compatible with database dumps.
 
-###Supported RDBMS
+### Supported RDBMS
 * Postgresql
 * MySQL
 
 SQLite coming soon...
 
-###Usage:
-####Installation:
+### Usage:
+#### Installation:
 
 Preferred method of installation is globally via npm:
 
@@ -74,10 +74,10 @@ Once chosen, Migratory will import sqlFile1 and sqlFile2 into specified DB seque
 There's no limit to the amount of files you can import in one command.
 If any errors are encountered, all changes will be rolled back.
 
-####Login Credentials
+#### Login Credentials
 These will be asked upon migration for security purposes
 
-###Foreseeable updates:
+### Foreseeable updates:
 * Importing of all migrations in directory
 * Different import actions (up/down -- this will require directory structure, additional files)
 * Grunt / Gulp integration
