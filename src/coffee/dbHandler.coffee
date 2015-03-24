@@ -8,8 +8,8 @@ dbHandler =
          process.stdout.write '\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql\n'
          process.exit 1
       
-      @currentFile = 0;
-      @files = filesToProcess;
+      @currentFile = 0
+      @files = filesToProcess
       @database = require __dirname+'/orms/'+credentials.type+'.js'
 
       process.stdout.write '\nConnecting as '.green + credentials.username + ' ... '    
