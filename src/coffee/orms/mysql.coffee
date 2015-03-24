@@ -14,7 +14,6 @@ errorHandler = require '../bin/errorHandler.js'
       rollback
       commit
       processFile
-      handleError
 
    The following methods are OPTIONAL:
       setSchema
@@ -22,7 +21,7 @@ errorHandler = require '../bin/errorHandler.js'
 ###
 
 mysqlDatabaseHandler =
-      connect: (credentials, cb) ->
+      connect: (credentials, success, failure) ->
          connection = mysql.createConnection host: credentials.host,
             user: credentials.username,
             password: credentials.password,
@@ -30,41 +29,38 @@ mysqlDatabaseHandler =
             multipleStatements:true
 
          connection.connect (err) ->
-            throw err if err
+            return failure err, connection, this if err and failure
             process.stdout.write 'Successful'.green+'\n'
-            cb connection if cb
+            success connection if success
 
-      setSchema: (client, schema, cb) ->
+      setSchema: (client, schema, success, failure) ->
          # No schemas in MySQL.
          console.log '\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green
-         cb client if cb
+         success client
      
-      beginTransaction: (client, cb) ->
+      beginTransaction: (client, success, failure) ->
          client.query 'START TRANSACTION', 
          (err, results) ->
-            throw err if err
-            cb client if cb
+            return failure err, client, this if err and failure
+            success client if success
          
       rollback: (client, success, failure) ->
          client.query 'ROLLBACK', 
             (err, results) ->
-            failure client if err and failure
-            success client if success
+               return failure err, client, this if err and failure
+               success client if success
          
-      commit: (client, cb) ->
+      commit: (client, success, failure) ->
          client.query 'COMMIT', 
          (err,result) ->
-            throw err if err 
-            cb client if cb
+            return failure err, client, this if err and failure
+            success client
          
-      processFile: (client, sqlFile, cb) ->
+      processFile: (client, sqlFile, success, failure) ->
          client.query sqlFile, 
             (err, result) ->
-               throw err if err
+               failure err, client, this if err and failure
                process.stdout.write ' Successful'.green
-            cb client if cb
-         
-      handleError: (err, client) ->
-         errorHandler.handleDbError err, client, this
-      
+            success client
+
 module.exports = mysqlDatabaseHandler;
