@@ -14,45 +14,48 @@ dbHandler =
 
       process.stdout.write '\nConnecting as '.green + credentials.username + ' ... '    
 
-      try
-         @database.connect credentials, 
-            (dbClient) ->
-               if credentials.schema
-                     @database.setSchema dbClient, credentials.schema, 
-                        (client) ->   
-                           @database.beginTransaction client
-                           @processFiles client
-               else
-                  database.beginTransaction client
-                  @processFiles dbClient
-      catch err
-         errorHandler.handleDbError err
+      @database.connect credentials, 
+         (dbClient) ->
+            # Success
+            if credentials.schema
+                  @database.setSchema dbClient, credentials.schema, 
+                     (client) ->   
+                        @database.beginTransaction client
+                        @processFiles client
+            else
+               database.beginTransaction client
+               @processFiles dbClient
+         , (err) ->
+            # Failure
+            errorHandler.handleDbError err
       
    processFiles: (dbClient) ->
       currFile = @files[currentFile]
 
       process.stdout.write '\nProcessing file: '.green + currFile.yellow+' ...'.green
       sqlFile = fs.readFileSync currFile .toString
-
-      try
-         database.processFile dbClient, sqlFile, 
-            (dbClient)->
-               ++@currentFile;
-               if @files.length > @currentFile
-                  @processFiles dbClient
-               else
-                  @migrationComplete dbClient
-      catch err
-         errorHandler.handleDbError(err, dbClient, database, currFile);
-
+      
+      database.processFile dbClient, sqlFile, 
+         (dbClient)->
+            # Success
+            ++@currentFile;
+            if @files.length > @currentFile
+               @processFiles dbClient
+            else
+               @migrationComplete dbClient
+         , (err, client, dbInterface) ->
+            # Failure
+            errorHandler.handleDbError err, client, dbInterface, currFile
+   
    migrationComplete:
       (dbClient) ->
-         try
-            database.commit dbClient, 
-               ->         
-                  console.log '\nMigration Complete'.green
-                  process.exit 0
-         catch err
-            errorHandler.handleDbError err
+         database.commit dbClient, 
+            ->         
+               # Success
+               console.log '\nMigration Complete'.green
+               process.exit 0
+            , (err, client) ->
+               # Failure
+               errorHandler.handleDbError err, client
          
 module.exports = dbHandler
