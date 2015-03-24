@@ -14,54 +14,50 @@ errorHandler = require '../bin/errorHandler.js'
       rollback
       commit
       processFile
-      handleError
-
+      
    The following methods are OPTIONAL:
       setSchema
 
 ###
 
 pgDatabaseHandler = 
-   connect: (credentials, cb) ->
+   connect: (credentials, success, failure) ->
       pg.connect "postgres://#{credentials.username}:#{credentials.password}@#{credentials.host}/#{credentials.database}",
          (err, newClient, done) ->
-            return @handleError err if err               
+            return failure err, newClient, this if err
             process.stdout.write 'Successful'.green + "\n"
-            cb newClient
+            success newClient
 
-      setSchema: (client, schema, cb) ->
+      setSchema: (client, schema, success, failure) ->
          console.log '\nSetting Schema to: '.green + credentials.schema
          client.query 'SET search_path TO '+credentials.schema+';', 
             (err, result) ->
-               return @handleError err, client if err
-               cb client  
+               return failure err, client, this if err
+               success client  
 
-      beginTransaction: (client, cb) ->
+      beginTransaction: (client, success, failure) ->
          client.query 'BEGIN;',
             (err,result) ->
-               return @handleError err, client if err               
-               cb client
+               return failure err, client, this if err
+               success client
 
       rollback: (client, success, failure) ->
          client.query 'ROLLBACK;',
             (err, result) ->
-               return failure client if err
-               return success client if success
+               return failure err, client, this if err
+               success client if success
 
-      commit: (client, cb) ->
+      commit: (client, success, failure) ->
          client.query 'COMMIT;',
             (err,result) ->
-               return @handleError err, client if err
-               cb client
+               return failure err, client, this if err
+               success client
 
-      processFile: (client, sqlFile, cb) ->
+      processFile: (client, sqlFile, success, failure) ->
          client.query sqlFile,
             (err, result) ->
-               return @handleError err, client if err
+               return failure err, client, this if err
                process.stdout.write ' Successful'.green
-               cb client 
+               success client 
 
-      handleError: (err, client) ->
-         errorHandler.handleDbError err, client, this
-      
 module.exports = pgDatabaseHandler;

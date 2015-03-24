@@ -19,68 +19,64 @@ errorHandler = require('../bin/errorHandler.js');
       rollback
       commit
       processFile
-      handleError
-
+      
    The following methods are OPTIONAL:
       setSchema
  */
 
 pgDatabaseHandler = {
-  connect: function(credentials, cb) {
+  connect: function(credentials, success, failure) {
     pg.connect("postgres://" + credentials.username + ":" + credentials.password + "@" + credentials.host + "/" + credentials.database, function(err, newClient, done) {
       if (err) {
-        return this.handleError(err);
+        return failure(err, newClient, this);
       }
       process.stdout.write('Successful'.green + "\n");
-      return cb(newClient);
+      return success(newClient);
     });
     return {
-      setSchema: function(client, schema, cb) {
+      setSchema: function(client, schema, success, failure) {
         console.log('\nSetting Schema to: '.green + credentials.schema);
         return client.query('SET search_path TO ' + credentials.schema + ';', function(err, result) {
           if (err) {
-            return this.handleError(err, client);
+            return failure(err, client, this);
           }
-          return cb(client);
+          return success(client);
         });
       },
-      beginTransaction: function(client, cb) {
+      beginTransaction: function(client, success, failure) {
         return client.query('BEGIN;', function(err, result) {
           if (err) {
-            return this.handleError(err, client);
+            return failure(err, client, this);
           }
-          return cb(client);
+          return success(client);
         });
       },
       rollback: function(client, success, failure) {
         return client.query('ROLLBACK;', function(err, result) {
           if (err) {
-            return failure(client);
+            return failure(err, client, this);
           }
           if (success) {
             return success(client);
           }
         });
       },
-      commit: function(client, cb) {
+      commit: function(client, success, failure) {
         return client.query('COMMIT;', function(err, result) {
           if (err) {
-            return this.handleError(err, client);
+            return failure(err, client, this);
           }
-          return cb(client);
+          return success(client);
         });
       },
-      processFile: function(client, sqlFile, cb) {
+      processFile: function(client, sqlFile, success, failure) {
         return client.query(sqlFile, function(err, result) {
           if (err) {
-            return this.handleError(err, client);
+            return failure(err, client, this);
           }
           process.stdout.write(' Successful'.green);
-          return cb(client);
+          return success(client);
         });
-      },
-      handleError: function(err, client) {
-        return errorHandler.handleDbError(err, client, this);
       }
     };
   }
