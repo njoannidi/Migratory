@@ -2,7 +2,7 @@
   "name": "migratory",
   "version": "0.0.11a",
   "description": "A tool to migrate raw SQL files in a transactional manner",
-  "main": "bin/migratory.js",
+  "main": "src/bin/migratory.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -37,10 +37,18 @@
     "prompt": "^0.2.14"
   },
   "bin": {
-    "migratory": "bin/migratory.js"
+    "migratory": "src/bin/migratory.js"
   },
   "devDependencies": {
+    "coffee-script": "^1.9.1",
     "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^0.10.0"
+    "grunt-contrib-jshint": "^0.10.0",
+    "gulp": "^3.8.11",
+    "gulp-coffee": "^2.3.1",
+    "gulp-jshint": "^1.9.4",
+    "gulp-util": "^3.0.4",
+    "gulp-watch": "^4.2.0",
+    "jshint": "^2.6.3",
+    "jshint-stylish": "^1.0.1"
   }
 }
