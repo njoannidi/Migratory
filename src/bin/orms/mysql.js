@@ -35,7 +35,7 @@ mysqlDatabaseHandler = {
     });
     return connection.connect(function(err) {
       if (err && failure) {
-        return failure(err, connection, this);
+        return failure(err, connection, mysqlDatabaseHandler);
       }
       process.stdout.write('Successful'.green + '\n');
       if (success) {
@@ -44,13 +44,13 @@ mysqlDatabaseHandler = {
     });
   },
   setSchema: function(client, schema, success, failure) {
-    console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for this connection set to: '.green + credentials.schema + ')'.green);
+    console.log('\nSchemas are not supported in MySQL... Moving on. (Schema for mysqlDatabaseHandler connection set to: '.green + credentials.schema + ')'.green);
     return success(client);
   },
   beginTransaction: function(client, success, failure) {
     return client.query('START TRANSACTION', function(err, results) {
       if (err && failure) {
-        return failure(err, client, this);
+        return failure(err, client, mysqlDatabaseHandler);
       }
       if (success) {
         return success(client);
@@ -60,7 +60,7 @@ mysqlDatabaseHandler = {
   rollback: function(client, success, failure) {
     return client.query('ROLLBACK', function(err, results) {
       if (err && failure) {
-        return failure(err, client, this);
+        return failure(err, client, mysqlDatabaseHandler);
       }
       if (success) {
         return success(client);
@@ -70,7 +70,7 @@ mysqlDatabaseHandler = {
   commit: function(client, success, failure) {
     return client.query('COMMIT', function(err, result) {
       if (err && failure) {
-        return failure(err, client, this);
+        return failure(err, client, mysqlDatabaseHandler);
       }
       return success(client);
     });
@@ -78,7 +78,7 @@ mysqlDatabaseHandler = {
   processFile: function(client, sqlFile, success, failure) {
     return client.query(sqlFile, function(err, result) {
       if (err && failure) {
-        failure(err, client, this);
+        failure(err, client, mysqlDatabaseHandler);
       }
       return process.stdout.write(' Successful'.green);
     }, success(client));
