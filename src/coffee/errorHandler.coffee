@@ -2,7 +2,8 @@ errorHandler =
    handleDbError: (err, client, database, file) ->
       console.log '\n\nError Encountered:\n'.red
       console.log err.toString().red
-      console.log 'Error Code: '.red +err.code.red
+      if err.code and err.code.toString()
+         console.log 'Error Code: '.red + err.code.toString().red
       console.log '\nAttempting to Roll Back.'.magenta
 
       database.rollback client, 
@@ -22,4 +23,4 @@ errorHandler =
       console.log err
       process.exit 1
    
-module.exports errorHandler
+module.exports = errorHandler

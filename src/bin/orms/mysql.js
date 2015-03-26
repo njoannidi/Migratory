@@ -1,10 +1,8 @@
-var errorHandler, fs, mysql, mysqlDatabaseHandler;
+var fs, mysql, mysqlDatabaseHandler;
 
 mysql = require('mysql');
 
 fs = require('fs');
-
-errorHandler = require('../bin/errorHandler.js');
 
 
 /*
