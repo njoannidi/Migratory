@@ -61,15 +61,10 @@ args = {
 
 exports.handle = function(cb) {
   var i;
-  if ((function() {
-    var results;
-    results = [];
-    for (i in args) {
-      results.push(args[i].check());
+  for (i in args) {
+    if (args[i].check()) {
+      args[i].action();
     }
-    return results;
-  })()) {
-    args[i].action();
   }
-  return cb;
+  return cb();
 };

@@ -4,7 +4,9 @@ errorHandler = {
   handleDbError: function(err, client, database, file) {
     console.log('\n\nError Encountered:\n'.red);
     console.log(err.toString().red);
-    console.log('Error Code: '.red(+err.code.red));
+    if (err.code && err.code.toString()) {
+      console.log('Error Code: '.red + err.code.toString().red);
+    }
     console.log('\nAttempting to Roll Back.'.magenta);
     return database.rollback(client, function() {
       console.log('Rollback Successful.'.yellow);
@@ -24,4 +26,4 @@ errorHandler = {
   }
 };
 
-module.exports(errorHandler);
+module.exports = errorHandler;

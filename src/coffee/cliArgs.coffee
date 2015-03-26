@@ -66,5 +66,8 @@ args =
          
 
 exports.handle = (cb) ->
-   args[i].action() if args[i].check() for i of args
-   cb
+   for i of args
+      if args[i].check()
+         args[i].action()
+   # args[i].action() if args[i].check() for i of args
+   cb()

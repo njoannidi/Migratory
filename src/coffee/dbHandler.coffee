@@ -4,7 +4,7 @@ errorHandler = require './errorHandler.js'
 dbHandler = 
    beginMigration: (credentials, filesToProcess) ->
 
-      if !fs.existsSync __dirname+'/../orms/'+credentials.type+'.js'
+      if !fs.existsSync __dirname+'/orms/'+credentials.type+'.js'
          process.stdout.write '\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql\n'
          process.exit 1
       
@@ -18,38 +18,46 @@ dbHandler =
          (dbClient) ->
             # Success
             if credentials.schema
-                  @database.setSchema dbClient, credentials.schema, 
+                  dbHandler.database.setSchema dbClient, credentials.schema, 
                      (client) ->   
-                        @database.beginTransaction client
-                        @processFiles client
+                        dbHandler.database.beginTransaction client 
+                           , ->
+                              # Success
+                              dbHandler.processFiles client
+                           , errorHandler.handleDbError
+                              
             else
-               database.beginTransaction client
-               @processFiles dbClient
+               dbHandler.database.beginTransaction client
+                  , ->
+                     # Success
+                     dbHandler.processFiles dbClient
+                  , dbHandler.processFiles
+
          , (err) ->
             # Failure
-            errorHandler.handleDbError err
+            errorHandler.onErr err
       
    processFiles: (dbClient) ->
-      currFile = @files[currentFile]
+      currFile = @files[@currentFile]
 
       process.stdout.write '\nProcessing file: '.green + currFile.yellow+' ...'.green
-      sqlFile = fs.readFileSync currFile .toString
+      sqlFile = fs.readFileSync(currFile).toString()
       
-      database.processFile dbClient, sqlFile, 
+      @database.processFile dbClient, sqlFile, 
          (dbClient)->
             # Success
-            ++@currentFile;
-            if @files.length > @currentFile
-               @processFiles dbClient
+            ++dbHandler.currentFile;
+            if dbHandler.files.length > dbHandler.currentFile
+               dbHandler.processFiles dbClient
             else
-               @migrationComplete dbClient
+               dbHandler.migrationComplete dbClient
          , (err, client, dbInterface) ->
             # Failure
             errorHandler.handleDbError err, client, dbInterface, currFile
    
    migrationComplete:
       (dbClient) ->
-         database.commit dbClient, 
+         dbHandler.database.commit dbClient, 
             ->         
                # Success
                console.log '\nMigration Complete'.green

@@ -6,7 +6,7 @@ errorHandler = require('./errorHandler.js');
 
 dbHandler = {
   beginMigration: function(credentials, filesToProcess) {
-    if (!fs.existsSync(__dirname + '/../orms/' + credentials.type + '.js')) {
+    if (!fs.existsSync(__dirname + '/orms/' + credentials.type + '.js')) {
       process.stdout.write('\nDatabase Type: '.red + credentials.type + ' not supported.\n Supported types: mysql, pgsql\n');
       process.exit(1);
     }
@@ -16,36 +16,38 @@ dbHandler = {
     process.stdout.write('\nConnecting as '.green + credentials.username + ' ... ');
     return this.database.connect(credentials, function(dbClient) {
       if (credentials.schema) {
-        return this.database.setSchema(dbClient, credentials.schema, function(client) {
-          this.database.beginTransaction(client);
-          return this.processFiles(client);
+        return dbHandler.database.setSchema(dbClient, credentials.schema, function(client) {
+          return dbHandler.database.beginTransaction(client, function() {
+            return dbHandler.processFiles(client);
+          }, errorHandler.handleDbError);
         });
       } else {
-        database.beginTransaction(client);
-        return this.processFiles(dbClient);
+        return dbHandler.database.beginTransaction(client, function() {
+          return dbHandler.processFiles(dbClient);
+        }, dbHandler.processFiles);
       }
     }, function(err) {
-      return errorHandler.handleDbError(err);
+      return errorHandler.onErr(err);
     });
   },
   processFiles: function(dbClient) {
     var currFile, sqlFile;
-    currFile = this.files[currentFile];
+    currFile = this.files[this.currentFile];
     process.stdout.write('\nProcessing file: '.green + currFile.yellow + ' ...'.green);
-    sqlFile = fs.readFileSync(currFile.toString);
-    return database.processFile(dbClient, sqlFile, function(dbClient) {
-      ++this.currentFile;
-      if (this.files.length > this.currentFile) {
-        return this.processFiles(dbClient);
+    sqlFile = fs.readFileSync(currFile).toString();
+    return this.database.processFile(dbClient, sqlFile, function(dbClient) {
+      ++dbHandler.currentFile;
+      if (dbHandler.files.length > dbHandler.currentFile) {
+        return dbHandler.processFiles(dbClient);
       } else {
-        return this.migrationComplete(dbClient);
+        return dbHandler.migrationComplete(dbClient);
       }
     }, function(err, client, dbInterface) {
       return errorHandler.handleDbError(err, client, dbInterface, currFile);
     });
   },
   migrationComplete: function(dbClient) {
-    return database.commit(dbClient, function() {
+    return dbHandler.database.commit(dbClient, function() {
       console.log('\nMigration Complete'.green);
       return process.exit(0);
     }, function(err, client) {
