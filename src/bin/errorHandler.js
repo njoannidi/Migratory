@@ -10,6 +10,9 @@ errorHandler = {
     console.log('\nAttempting to Roll Back.'.magenta);
     return database.rollback(client, function() {
       console.log('Rollback Successful.'.yellow);
+      if (file) {
+        console.log('\nError occurred in: '.magenta + file.yellow + ' Please check this file and try again.\n'.magenta);
+      }
       return process.exit(1);
     }, function() {
       console.log('Rollback Unsuccessful. You may have to restore the database.\n'.red);

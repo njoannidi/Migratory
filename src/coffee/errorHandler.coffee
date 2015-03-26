@@ -10,7 +10,8 @@ errorHandler =
          ->
             # Success
             console.log 'Rollback Successful.'.yellow
-            # console.log 'Error occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta
+            if file
+               console.log '\nError occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta
             process.exit 1
          , ->
             # Failure
