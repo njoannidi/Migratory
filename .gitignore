@@ -4,5 +4,4 @@ config/*
 !config/dbInfo.json.tmp
 migratory.json
 npm-debug.log
-src/bin/*
-!src/bin/migratory.js
+src/bin

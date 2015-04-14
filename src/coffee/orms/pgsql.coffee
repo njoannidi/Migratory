@@ -5,7 +5,7 @@ fs = require 'fs'
 
    Database Adapter
 
-   Since JS doesn't have interfaces, here's a spec:   
+   Since JS doesn't have interfaces, here's a spec:
 
    The following methods are REQUIRED:
       connect
@@ -13,13 +13,13 @@ fs = require 'fs'
       rollback
       commit
       processFile
-      
+
    The following methods are OPTIONAL:
       setSchema
 
 ###
 
-pgDatabaseHandler = 
+pgDatabaseHandler =
    connect: (credentials, success, failure) ->
       pg.connect "postgres://#{credentials.username}:#{credentials.password}@#{credentials.host}/#{credentials.database}",
          (err, newClient, done) ->
@@ -28,11 +28,11 @@ pgDatabaseHandler =
             success newClient
 
    setSchema: (client, schema, success, failure) ->
-      console.log '\nSetting Schema to: '.green + credentials.schema
-      client.query 'SET search_path TO '+credentials.schema+';', 
+      console.log '\nSetting Schema to: '.green + schema
+      client.query 'SET search_path TO '+schema+';',
          (err, result) ->
             return failure err, client, pgDatabaseHandler if err
-            success client  
+            success client
 
    beginTransaction: (client, success, failure) ->
       client.query 'BEGIN;',
@@ -57,6 +57,6 @@ pgDatabaseHandler =
          (err, result) ->
             return failure err, client, pgDatabaseHandler if err
             process.stdout.write ' Successful'.green
-            success client 
+            success client
 
 module.exports = pgDatabaseHandler
