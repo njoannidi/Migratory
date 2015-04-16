@@ -13,7 +13,7 @@ args =
       check: -> process.argv[2] is '-h' or process.argv[2] is 'help'
       action: ->
          console.log '''
-         Migratoy
+         Migratory
 
          Reads SQL files and imports into specified DB within a transaction
 
@@ -22,10 +22,14 @@ args =
 
          Imports [sqlFile1] and [sqlFile2] sequentially within a transaction.
          There is no limit to the amount of files you can include here.
-         If any errors are encountered, the changes will automatically be rolled back if possible.\n
-         Settings File: migratory.js
-         To generate a new settings file, run:
+         If any errors are encountered, the changes will automatically be rolled back if possible.
+
+         Settings File: migratory.json
+         To generate a new settings file run:
          migratory init
+
+         To upgrade your settings file run:
+         migratory upgrade
 
          Login credentials will be asked upon migration.
          More info in README.md
@@ -56,10 +60,6 @@ args =
 
 
 exports.handle = (cb) ->
-   actionTriggered = false
    for i of args
-      if args[i].check()
-         actionTriggered = true
-         args[i].action()
-   # args[i].action() if args[i].check() for i of args
-   cb() if not actionTriggered
+      return args[i].action() if args[i].check()
+   cb()
