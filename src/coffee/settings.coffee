@@ -63,7 +63,7 @@ settings =
       inquirer.prompt
          type: 'input'
          message: 'Migration Directory'
-         name: 'migrationDirectory',
+         name: 'migrationDirectory'
          default: 'migrations'
          , (answer) ->
             that.settingsFile.migrationDirectory = answer.migrationDirectory
@@ -83,7 +83,7 @@ settings =
       inquirer.prompt
          type: 'input'
          message: 'Manifest File'
-         name: 'migrationManifest',
+         name: 'migrationManifest'
          default: 'migratoryManifest.json'
          , (answer) ->
             that.settingsFile.migrationManifest = answer.migrationManifest

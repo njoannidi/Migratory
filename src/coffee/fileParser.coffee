@@ -1,21 +1,23 @@
 fs = require 'fs'
 
-module.exports =
-   parse: (fileArgs) ->
-      directoryNotification = false
+fileParser =
+   parse: (fileArgs, settingsFile) ->
       files = []
+      @migrationDirectory = settingsFile.migrationDirectory
 
       for req in fileArgs
          if not fs.existsSync req
-            process.stderr.write '\nImport request '.magenta + file.yellow + ' does not exist. Please check path.'.magenta + '\n'
-            process.exit 1
+            migrationFile = "#{@migrationDirectory}/#{req}"
+            if fs.existsSync migrationFile
+               req = migrationFile
+            else
+               process.stderr.write '\nImport request '.magenta + file.yellow + ' does not exist. Please check path.'.magenta + '\n'
+               process.exit 1
 
          if not fs.lstatSync(req).isDirectory()
             files.push req
          else
-            if not directoryNotification
-               console.log '\r\nDirectory detected. Processing all files in directories sorted by alpha descending.\r\n'.yellow
-               directoryNotifiation = true
+            console.log '\r\nProcessing all files which, alpha descending in directory: '.green + "#{req}".yellow
 
             tempFiles = []
 
@@ -36,3 +38,5 @@ module.exports =
             files = files.concat tempFiles
 
       files
+
+module.exports = fileParser

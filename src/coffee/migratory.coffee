@@ -7,8 +7,10 @@ cliArgs = require './cliArgs.js'
 errorHandler = require './errorHandler.js'
 dbHandler = require './dbHandler.js'
 fileParser = require './fileParser.js'
+settings = require './settings'
 
 cliArgs.handle ->
+   # Declarations
    requested = process.argv.slice 2
    currentFile = 0
    configFile = 'migratory.json'
@@ -19,15 +21,23 @@ cliArgs.handle ->
 
    directoryNotification = false
 
-   files = fileParser.parse requested
-
+   # Config Files
    if not fs.existsSync "#{currPath}/#{configFile}"
       console.log "#{configFile} file not found. Are you in the right directory?"
-      process.exit 0
+      process.exit 1
 
    configSettings = JSON.parse(fs.readFileSync("#{currPath}/#{configFile}").toString())
 
-   for k, v of configSettings
+   if settings.needsUpgrade configSettings
+      console.log '\nYour config file needs an upgrade.'.yellow
+      console.log 'Please run: '.green + 'migratory upgrade\n'.white
+      process.exit 1
+
+   # Files
+   files = fileParser.parse requested, configSettings
+
+   # Server choices
+   for k, v of configSettings.environments
       settingsPrompt.push
          name: "#{k} (#{v.host}:#{v.database} - #{v.type})"
          value: v
