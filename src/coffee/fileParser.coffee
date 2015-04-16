@@ -1,13 +1,21 @@
 fs = require 'fs'
+os = require 'os'
 
 fileParser =
+   slash: ->
+      if os.platform is 'win32' then '\\' else '/'
+   sysPath: (path) ->
+      if os.platform is 'win32'
+         path.replace /[/]/g, '\\'
+      else
+         path.replace /[\\]/g, '/'
    parse: (fileArgs, settingsFile) ->
       files = []
       @migrationDirectory = settingsFile.migrationDirectory
 
       for req in fileArgs
          if not fs.existsSync req
-            migrationFile = "#{@migrationDirectory}/#{req}"
+            migrationFile = @sysPath "#{@migrationDirectory}/#{req}"
             if fs.existsSync migrationFile
                req = migrationFile
             else
@@ -20,6 +28,9 @@ fileParser =
             console.log '\r\nProcessing all files which, alpha descending in directory: '.green + "#{req}".yellow
 
             tempFiles = []
+
+            if req.substr -1 is not @slash()
+               req = req + @slash()
 
             for file in fs.readdirSync req
                try
