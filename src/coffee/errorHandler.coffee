@@ -1,27 +1,27 @@
-errorHandler = 
+errorHandler =
    handleDbError: (err, client, database, file) ->
-      console.log '\n\nError Encountered:\n'.red
-      console.log err.toString().red
+      process.stderr.write '\n\nError Encountered:\n'.red
+      process.stderr.write err.toString().red
       if err.code and err.code.toString()
-         console.log 'Error Code: '.red + err.code.toString().red
-      console.log '\nAttempting to Roll Back.'.magenta
+         process.stderr.write 'Error Code: '.red + err.code.toString().red
+      process.stderr.write '\nAttempting to Roll Back.'.magenta
 
-      database.rollback client, 
+      database.rollback client,
          ->
             # Success
-            console.log 'Rollback Successful.'.yellow
+            process.stderr.write 'Rollback Successful.'.yellow
             if file
-               console.log '\nError occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta
+               process.stderr.write '\nError occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta
             process.exit 1
          , ->
             # Failure
-            console.log 'Rollback Unsuccessful. You may have to restore the database.\n'.red
-            process.exit 2         
+            process.stderr.write 'Rollback Unsuccessful. You may have to restore the database.\n'.red
+            process.exit 2
 
    onErr: (err, result) ->
-      return if !err 
-      console.log 'An Error as occurred:\n '.red
-      console.log err
+      return if !err
+      process.stderr.write 'An Error as occurred:\n '.red
+      process.stderr.write err
       process.exit 1
-   
+
 module.exports = errorHandler

@@ -6,19 +6,20 @@ inquirer = require 'inquirer'
 cliArgs = require './cliArgs.js'
 errorHandler = require './errorHandler.js'
 dbHandler = require './dbHandler.js'
+fileParser = require './fileParser.js'
 
 cliArgs.handle ->
-   files = process.argv.slice 2
+   requested = process.argv.slice 2
    currentFile = 0
    configFile = 'migratory.json'
    currPath = process.cwd()
 
    settingsPrompt = []
+   files = []
 
-   for file in files
-      if not fs.existsSync file
-         console.log '\nImport file '.magenta + file.yellow + ' does not exist. Please check path.'.magenta + '\n'
-         process.exit 1
+   directoryNotification = false
+
+   files = fileParser.parse requested
 
    if not fs.existsSync "#{currPath}/#{configFile}"
       console.log "#{configFile} file not found. Are you in the right directory?"
