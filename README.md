@@ -2,7 +2,7 @@
 Imports SQL files into specified DB within a transaction.
 
 For those of you that prefer to use SQL rather than ORMs,
-or you just have some DB dumps kicking around that you'd 
+or you just have some DB dumps kicking around that you'd
 rather safely import via a transaction.
 
 Can be used to populate structure, data or both.
@@ -35,12 +35,17 @@ This will create a base settings file (migratory.json) that looks something like
 ```
 
 {
-    "Destination Label": {
-        "host": "",
-        "database": "",
-        "type": "",
-        "schema": "",
-     }
+   "environments":
+   {
+       "Destination Label": {
+           "host": "",
+           "database": "",
+           "type": "",
+           "schema": "",
+        }
+   },
+   "migrationDirectory": "migrations",
+   "migratoryManifest": "migratoryManifest.json"
 }
 ```
 **Destination Label:** A User-Friendly label that you'll recognize as a server. Maybe "Dev", "QA", or "Production"
@@ -49,9 +54,9 @@ This will create a base settings file (migratory.json) that looks something like
 
 **database:** Database on which your SQL commands will be executed
 
-**type:** The Type of DB to connect to. Currently only supporting pgsql
+**type:** The Type of DB to connect to. Currently only pgsql, mysql
 
-**schema:** Optional. Search path to be set.
+**schema:** Optional. Search path to be set. This is only relevant to pgsql.
 
 
 Credentials will be input at the time of migrations for security reasons.
