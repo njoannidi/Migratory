@@ -21,7 +21,6 @@ fs = require 'fs'
 
 mysqlDatabaseHandler =
    connect: (credentials, success, failure) ->
-      console.log credentials
       connection = mysql.createConnection
          host: credentials.host,
          user: credentials.username,
