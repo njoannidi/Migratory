@@ -2,7 +2,7 @@
 Imports SQL files into specified DB within a transaction.
 
 For those of you that prefer to use SQL rather than ORMs,
-or you just have some DB dumps kicking around that you'd 
+or you just have some DB dumps kicking around that you'd
 rather safely import via a transaction.
 
 Can be used to populate structure, data or both.
@@ -85,4 +85,4 @@ These will be asked upon migration for security purposes
 
 Pull requests welcome.
 
-version 0.0.12a
+version 0.0.14a
