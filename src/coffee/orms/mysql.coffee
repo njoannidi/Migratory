@@ -59,8 +59,8 @@ mysqlDatabaseHandler =
    processFile: (client, sqlFile, success, failure) ->
       client.query sqlFile,
          (err, result) ->
-            failure err, client, mysqlDatabaseHandler if err and failure
+            return failure err, client, mysqlDatabaseHandler if err and failure
             process.stdout.write ' Successful'.green
-         success client
+            success client
 
 module.exports = mysqlDatabaseHandler;
