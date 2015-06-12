@@ -1,5 +1,7 @@
 fs = require 'fs'
 os = require 'os'
+checksum = require './checksum.js'
+manifest = require './manifest.js'
 
 fileParser =
    slash: ->
@@ -23,9 +25,9 @@ fileParser =
                process.exit 1
 
          if not fs.lstatSync(req).isDirectory()
-            files.push req
+            files.push fileParser.getInfo req
          else
-            console.log '\r\nProcessing all files which, alpha descending in directory: '.green + "#{req}".yellow
+            console.log '\r\nProcessing all files, alpha descending in directory: '.green + "#{req}".yellow + '\n'
 
             tempFiles = []
 
@@ -42,12 +44,19 @@ fileParser =
                if isDirectory
                   console.log "Recursion not yet supported; ignoring directory ".magenta + "#{req}#{file}\r\n".yellow
                else
-                  tempFiles.push req + file
+                  tempFiles.push(fileParser.getInfo(req + file))
 
             tempFiles.sort()
 
             files = files.concat tempFiles
 
       files
+
+   getInfo: (fileName) ->
+      fileInfo = {}
+      fileInfo.name = fileName
+      fileInfo.checksum = checksum.getFromString(fs.readFileSync(fileName).toString())
+
+      fileInfo
 
 module.exports = fileParser

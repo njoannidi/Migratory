@@ -89,18 +89,24 @@ settings =
             that.settingsFile.migrationManifest = answer.migrationManifest
             that.upgrade()
 
+   exists: (path, file) ->
+      if fs.existsSync path+'/'+file
+         process.stderr.write """\nUnable to create #{file}
+         #{path} already contains #{file}\n\n"""
+
+         return true
+      false
+
    create: ->
       currPath = process.cwd()
 
-      if fs.existsSync currPath+'/'+'migratory.json'
-         process.stderr.write '''\nUnable to create migratory.json
-         Current directory already contains a file called migratory.json\n\n'''
+      if @exists currPath, 'migratory.json'
+         process.exit 1
 
-         settingsFile = JSON.parse(fs.readFileSync("#{currPath}/migratory.json").toString())
+      if @exists currPath, 'migratoryManifest.json'
          process.exit 1
 
       settingsBase = fs.readFileSync("#{__dirname}/templates/migratory.json").toString()
-
       console.log 'Writing migratory.json to: '+currPath+'/migratory.json'.green
 
       try
@@ -111,6 +117,19 @@ settings =
          process.exit 1
 
       console.log 'Success!'.green
+
+      manifestBase = fs.readFileSync("#{__dirname}/templates/migratoryManifest.json").toString()
+      console.log 'Writing migratoryManifest.json to: '+currPath+'/migratoryManifest.json'.green
+
+      try
+         fs.writeFileSync 'migratoryManifest.json', '{}'
+      catch e
+         console.log 'Write Failed'.red
+         console.log e
+         process.exit 1
+
+      console.log 'Success!'.green
+
       process.exit 0
 
    writeFile: ->
@@ -127,5 +146,24 @@ settings =
 
       console.log 'Success!'
       process.exit 0
+
+   get: ->
+
+      configFile = 'migratory.json'
+      currPath = process.cwd()
+
+      # Config Files
+      if not fs.existsSync "#{currPath}/#{configFile}"
+         console.log "#{configFile} file not found. Are you in the right directory?"
+         process.exit 1
+
+      configSettings = JSON.parse(fs.readFileSync("#{currPath}/#{configFile}").toString())
+
+      if @needsUpgrade configSettings
+         console.log '\nYour config file needs an upgrade.'.yellow
+         console.log 'Please run: '.green + 'migratory upgrade\n'.white
+         process.exit 1
+
+      configSettings
 
 module.exports = settings

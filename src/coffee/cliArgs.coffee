@@ -7,7 +7,7 @@ args =
    noFile:
       check: -> process.argv.length < 3
       action: ->
-         process.stderr.write '\nNo File selected, Aborting. \nFor help please use -h'
+         process.stderr.write '\nNo File selected, Aborting. \nFor help please use -h\n'
          process.exit 1
    help:
       check: -> process.argv[2] is '-h' or process.argv[2] is 'help'
@@ -41,6 +41,21 @@ args =
       action: ->
          settings = require './settings.js'
          settings.create()
+
+   checksum:
+      check: -> process.argv[2] is 'checksum'
+      action: ->
+         return console.log 'Checksum requries a file from which a checksum will be generated.' if !process.argv[3]
+
+         fs = require 'fs'
+
+         return console.log "#{process.argv[3]}".yellow + " does not exist.".red if !fs.existsSync process.argv[3]
+
+         fileString = fs.readFileSync(process.argv[3]).toString()
+
+         checksum = require './checksum.js'
+
+         console.log checksum.getFromString fileString
 
    upgrade:
       check: -> process.argv[2] is 'upgrade'

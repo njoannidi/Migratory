@@ -12,26 +12,11 @@ settings = require './settings'
 cliArgs.handle ->
    # Declarations
    requested = process.argv.slice 2
-   currentFile = 0
-   configFile = 'migratory.json'
-   currPath = process.cwd()
 
    settingsPrompt = []
    files = []
 
-   directoryNotification = false
-
-   # Config Files
-   if not fs.existsSync "#{currPath}/#{configFile}"
-      console.log "#{configFile} file not found. Are you in the right directory?"
-      process.exit 1
-
-   configSettings = JSON.parse(fs.readFileSync("#{currPath}/#{configFile}").toString())
-
-   if settings.needsUpgrade configSettings
-      console.log '\nYour config file needs an upgrade.'.yellow
-      console.log 'Please run: '.green + 'migratory upgrade\n'.white
-      process.exit 1
+   configSettings = settings.get()
 
    # Files
    files = fileParser.parse requested, configSettings
@@ -68,7 +53,7 @@ cliArgs.handle ->
          prompt.delimiter = ''
 
          prompt.get promptSchema, (err, res) ->
-            return errorHandler.onErr err if err
+            return console.log err if err
 
             credentials =
                username: res.username

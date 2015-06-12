@@ -83,7 +83,6 @@ If any errors are encountered, all changes will be rolled back.
 These will be asked upon migration for security purposes
 
 ### Foreseeable updates:
-* Importing of all migrations in directory
 * Different import actions (up/down -- this will require directory structure, additional files)
 * Grunt / Gulp integration
 * SSL

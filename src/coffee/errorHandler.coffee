@@ -11,7 +11,7 @@ errorHandler =
             # Success
             process.stderr.write 'Rollback Successful.'.yellow
             if file
-               process.stderr.write '\nError occurred in: '.magenta+file.yellow+' Please check this file and try again.\n'.magenta
+               process.stderr.write '\nError occurred in: '.magenta+file.name.yellow+' Please check this file and try again.\n'.magenta
             process.exit 1
          , ->
             # Failure
