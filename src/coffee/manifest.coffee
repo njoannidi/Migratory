@@ -76,6 +76,19 @@ module.exports =
       if not dateExists
          ref.dates.push @date
 
+   whichExist: (files, dbCreds) ->
+      @manifest = @get()
+      @archiveLabel = 'successful'
+      @manifestLabel = @getManifestLabel dbCreds
+
+      exist = []
+
+      for file in files
+         if @exists file
+            exist.push file
+
+      exist
+
    exists: (file) ->
       for entry in @manifest[@manifestLabel][@archiveLabel]
          return entry if entry.checksum is file.checksum
