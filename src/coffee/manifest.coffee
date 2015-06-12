@@ -58,11 +58,11 @@ module.exports =
       @manifest[@manifestLabel][@archiveLabel].push file
 
    update: (file, ref) ->
-
       nameExists = false
       for name in ref.names
-            nameExists = true if name is file.name
-            `break`
+            if name is file.name
+               nameExists = true
+               `break`
 
       if not nameExists
          ref.names.push file.name
