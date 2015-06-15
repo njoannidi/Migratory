@@ -6,27 +6,30 @@ inquirer = require 'inquirer'
 cliArgs = require './cliArgs.js'
 errorHandler = require './errorHandler.js'
 dbHandler = require './dbHandler.js'
+fileParser = require './fileParser.js'
+settings = require './settings'
+manifest = require './manifest'
+
 
 cliArgs.handle ->
-   files = process.argv.slice 2
-   currentFile = 0
-   configFile = 'migratory.json'
-   currPath = process.cwd()
+   if settings.needsUpgrade(settings.get())
+      console.log 'Your migratory.json needs an upgrade'
+      console.log 'Please run migratory upgrade.'
+      process.exit 1
+
+   # Declarations
+   requested = process.argv.slice 2
 
    settingsPrompt = []
+   files = []
 
-   for file in files
-      if not fs.existsSync file
-         console.log '\nImport file '.magenta + file.yellow + ' does not exist. Please check path.'.magenta + '\n'
-         process.exit 1
+   configSettings = settings.get()
 
-   if not fs.existsSync "#{currPath}/#{configFile}"
-      console.log "#{configFile} file not found. Are you in the right directory?"
-      process.exit 0
+   # Files
+   files = fileParser.parse requested, configSettings
 
-   configSettings = JSON.parse(fs.readFileSync("#{currPath}/#{configFile}").toString())
-
-   for k, v of configSettings
+   # Server choices
+   for k, v of configSettings.environments
       settingsPrompt.push
          name: "#{k} (#{v.host}:#{v.database} - #{v.type})"
          value: v
@@ -42,29 +45,71 @@ cliArgs.handle ->
                      '\nDb:\t'.green + settings.db.database,
                      '\nSchema:\t'.green + settings.db.schema + '\n'
 
-         promptSchema =
-            properties:
-               username:
-                  description: 'Database Username: '.cyan
-                  required: true
-               password:
-                  description: 'Datatabase Password: '.cyan
-                  hidden: true
-                  required: true
+         existing = manifest.whichExist files, settings.db
 
-         prompt.start()
-         prompt.message = ''
-         prompt.delimiter = ''
+         if existing.length is 0
+            passwordPrompt settings
+         else
+            console.log 'You have already migrated the following files to this database.'.yellow
+            console.log 'By default, these files will be skipped.\n'.yellow
+            migrateAnywayPrompt existing, settings
 
-         prompt.get promptSchema, (err, res) ->
-            return errorHandler.onErr err if err
+   migrateAnywayPrompt = (existing, settings) ->
+      for file in existing
+         file.checked = true
 
-            credentials =
-               username: res.username
-               password: res.password
-               host: settings.db.host
-               type: settings.db.type
-               database: settings.db.database
-               schema: settings.db.schema
+      inquirer.prompt
+         type: 'checkbox'
+         message: 'Please unselect any files you wish to migrate anyway'.magenta
+         choices: existing
+         name: 'skip'
+         , (filesTo) ->
 
-            dbHandler.beginMigration credentials, files
+            newFiles = []
+
+            for file in files
+               doSkip = false
+               for skipFile in filesTo.skip
+                  if skipFile is file.name
+                     doSkip = true
+
+               if not doSkip
+                  delete file.checked
+                  newFiles.push file
+
+            if newFiles.length < 1
+               console.log '\nNo files left to migrate. Aborting.\n'.yellow
+               process.exit 1
+
+            files = newFiles
+
+            passwordPrompt settings
+
+
+   passwordPrompt = (settings) ->
+      promptSchema =
+         properties:
+            username:
+               description: 'Database Username: '.cyan
+               required: true
+            password:
+               description: 'Datatabase Password: '.cyan
+               hidden: true
+               required: true
+
+      prompt.start()
+      prompt.message = ''
+      prompt.delimiter = ''
+
+      prompt.get promptSchema, (err, res) ->
+         return console.log err if err
+
+         credentials =
+            username: res.username
+            password: res.password
+            host: settings.db.host
+            type: settings.db.type
+            database: settings.db.database
+            schema: settings.db.schema
+
+         dbHandler.beginMigration credentials, files
