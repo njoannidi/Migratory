@@ -7,7 +7,6 @@ settings = require './settings'
 module.exports =
    exists: (checksum) ->
       if typeof @manifest is 'undefined'
-         settingsFile = settings.get()
          @manifest = @get()
 
       for file in @manifest

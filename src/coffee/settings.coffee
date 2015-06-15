@@ -87,6 +87,17 @@ settings =
          default: 'migratoryManifest.json'
          , (answer) ->
             that.settingsFile.migrationManifest = answer.migrationManifest
+            manifestBase = fs.readFileSync("#{__dirname}/templates/migratoryManifest.json").toString()
+            currPath = process.cwd()
+            console.log "Writing manifest to: #{currPath}/#{answer.migrationManifest}".green
+
+            try
+               fs.writeFileSync answer.migrationManifest, '{}'
+            catch e
+               console.log 'Write Failed'.red
+               console.log e
+               process.exit 1
+               
             that.upgrade()
 
    exists: (path, file) ->
