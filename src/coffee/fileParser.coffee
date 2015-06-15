@@ -31,7 +31,7 @@ fileParser =
 
             tempFiles = []
 
-            if req.substr -1 is not @slash()
+            if req.substr(-1) isnt @slash()
                req = req + @slash()
 
             for file in fs.readdirSync req
