@@ -31,7 +31,7 @@ module.exports =
 
       @createLabelIfNotExist()
 
-      if addThis.constructor == Array
+      if addThis.constructor is Array
          for file in addThis
             @upsert file
       else
@@ -106,7 +106,7 @@ module.exports =
       if not @manifest.hasOwnProperty @manifestLabel
          @manifest[@manifestLabel] = {
             successful: [],
-            failure: []
+            failed: []
          }
 
 ###

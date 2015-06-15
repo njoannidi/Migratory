@@ -55,7 +55,12 @@ dbHandler =
                dbHandler.migrationComplete dbClient
          , (err, client, dbInterface) ->
             # Failure
-            errorHandler.handleDbError err, client, dbInterface, currFile
+            errorHandler.handleDbError err,
+               client,
+               dbInterface,
+               currFile,
+               dbHandler.files,
+               dbHandler.credentials
 
    migrationComplete:
       (dbClient) ->
