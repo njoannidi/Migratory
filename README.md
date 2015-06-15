@@ -65,10 +65,10 @@ Credentials will be input at the time of migrations for security reasons.
 
 You can add as many servers as you like into the environments object.
 
-Once you're done, you're ready to use Migratory!
+Once you're done you're ready to use Migratory!
 
 #### Running Migrations
-Once you're all set up with your migratory.json file you can run your deployments. You'll need to run these deployments from the directory that contains your migratory.js file.
+Once you're all set up with your migratory.json file you can run your deployments. You'll need to run these deployments from the directory that contains your `migratory.js` file.
 
 ```
 migratory sqlFile1.sql sqlFile2.sql
@@ -83,6 +83,31 @@ If any errors are encountered, all changes will be rolled back.
 
 #### Login Credentials
 These will be asked upon migration for security purposes
+
+#### Directories
+Directories included in the list of files to migrate will be recursively descended into. Files and directories will be ordered in alpha descending order within their directory. For example migrating the following directory:
+
+```
+| Awesome Changes
++- awesomechange1.sql
++- awesomechange2.sql
+| Cool Changes
++- coolchange1.sql
++- Ultra Cool Changes
++-- ultracoolchange1.sql
+| greatchange.sql
+
+```
+
+Would yield the following migration order:
+
+1. awesomechange1.sql
+2. awesomechange2.sql
+3. coolchange1.sql
+4. ultracoolchange1.sql
+5. greatchange.sql
+
+The file list is not sorted once all files are found; only within their directories. Directories are included in the alpha sort (A directory's name determines where in the sort order its contents will fall)
 
 ## Manifest
 
