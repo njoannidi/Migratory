@@ -17,8 +17,10 @@ cliArgs.handle ->
       console.log 'Please run migratory upgrade.'
       process.exit 1
 
-   # Declarations
-   requested = process.argv.slice 2
+   if process.argv.length < 3
+      requested = [settings.get().migrationDirectory]
+   else
+      requested = process.argv.slice 2
 
    settingsPrompt = []
    files = []

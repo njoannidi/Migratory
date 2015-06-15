@@ -4,11 +4,6 @@
 ###
 
 args =
-   noFile:
-      check: -> process.argv.length < 3
-      action: ->
-         process.stderr.write '\nNo File selected, Aborting. \nFor help please use -h\n'
-         process.exit 1
    help:
       check: -> process.argv[2] is '-h' or process.argv[2] is 'help'
       action: ->
