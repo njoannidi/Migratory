@@ -12,6 +12,11 @@ manifest = require './manifest'
 
 
 cliArgs.handle ->
+   if settings.needsUpgrade(settings.get())
+      console.log 'Your migratory.json needs an upgrade'
+      console.log 'Please run migratory upgrade.'
+      process.exit 1
+
    # Declarations
    requested = process.argv.slice 2
 

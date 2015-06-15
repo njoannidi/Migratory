@@ -29,11 +29,7 @@ module.exports =
       @manifestLabel = @getManifestLabel dbCreds
       @date = new Date
 
-      if not @manifest.hasOwnProperty @manifestLabel
-         @manifest[@manifestLabel] = {
-            successful: [],
-            failure: []
-         }
+      @createLabelIfNotExist()
 
       if addThis.constructor == Array
          for file in addThis
@@ -80,6 +76,8 @@ module.exports =
       @archiveLabel = 'successful'
       @manifestLabel = @getManifestLabel dbCreds
 
+      @createLabelIfNotExist()
+
       exist = []
 
       for file in files
@@ -103,6 +101,14 @@ module.exports =
          console.log 'If your migration was successful, you can manually add the following to your migration file:'
          console.log file
          process.exit 1
+
+   createLabelIfNotExist: ->
+      if not @manifest.hasOwnProperty @manifestLabel
+         @manifest[@manifestLabel] = {
+            successful: [],
+            failure: []
+         }
+
 ###
          {
          "[type:database@host:schema]":
